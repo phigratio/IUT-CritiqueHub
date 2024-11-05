@@ -56,6 +56,24 @@ mongoose
 //   return
 // };
 
+const verifyJWT = (req, res, next) => {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+
+  if (token == null) {
+    return res.status(401).json({ error: "No access token" });
+  }
+
+  jwt.verify(token, process.env.SECRET_ACCESS_KEY, (err, user) => {
+    if (err) {
+      return res.status(403).json({ error: "Access token is invalid" });
+    }
+
+    req.user = user.id;
+    next();
+  });
+};
+
 const formatDataToSend = (user) => {
   const access_token = jwt.sign(
     {
@@ -291,6 +309,39 @@ server.post("/google-auth", async (req, res) => {
       error:
         "Failed to authenticate you with Google. Try with some other Google account",
     });
+  }
+});
+
+server.post("/create-blog", verifyJWT, (req, res) => {
+  let authorId = req.user;
+  let { title, des, banner, tags, content, draft } = req.body;
+
+  if (!title.length) {
+    return res
+      .status(403)
+      .json({ error: "You must provide a title to publish the blog" });
+  }
+
+  if (!des.length || des.length > 200) {
+    return res.status(403).json({
+      error: "You must provide blog description within 200 characters",
+    });
+  }
+  if (!banner.length) {
+    return res.status(403).json({
+      error: "You must provide blog banner to publish it",
+    });
+  }
+  if (!content.blocks.length) {
+    return res
+      .status(403)
+      .json({ error: "There must be some blog content to publish it" });
+  }
+
+  if (!tags.length || tags.length > 10) {
+    return res
+      .status(403)
+      .json({ error: "Provide tags to publish blog.Maximum 10" });
   }
 });
 
