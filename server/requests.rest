@@ -1,8 +1,2 @@
-POST http://localhost:3000/create-blog 
-Content-Type: application/json
+GET http://localhost:3000/trending-blogs 
 
-{
-
-    "email":"asd7@email.com",
-    "password":"123acbAd"
-}
