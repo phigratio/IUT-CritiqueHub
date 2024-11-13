@@ -10,6 +10,7 @@ import NoDataMessage from "../components/nodata.component";
 
 const HomePage = () => {
   let [blogs, setBlog] = useState(null);
+  
   let [trendingBlogs, setTrendingBlogs] = useState(null);
   let [pageState, setPageState] = useState("home");
   let categories = ["tech", "food", "snacks", "travel", "programming"];
