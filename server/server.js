@@ -313,6 +313,18 @@ server.post("/google-auth", async (req, res) => {
   }
 });
 
+server.post("/get-profile", (req, res) => {
+  let { username } = req.body;
+
+  User.findOne({ "personal_info.username": username })
+    .select("-personal_info.password -google-auth -updateAt -blogs")
+    .then((user) => {
+      return res.status(200).json(user);
+    })
+    .catch((err) => {
+      return res.status(500).json({ error: err.message });
+    });
+});
 server.post("/create-blog", verifyJWT, (req, res) => {
   let authorId = req.user;
   let { title, des, banner, tags, content, draft } = req.body;
@@ -442,10 +454,14 @@ server.get("/trending-blogs", (req, res) => {
     });
 });
 server.post("/search-blogs", (req, res) => {
-  let { tag, page } = req.body;
+  let { tag, query, page } = req.body;
 
-  let findQuery = { tags: tag, draft: false };
-
+  let findQuery;
+  if (tag) {
+    findQuery = { tags: tag, draft: false };
+  } else if (query) {
+    findQuery = { draft: false, title: new RegExp(query, "i") };
+  }
   let maxLimit = 3;
 
   Blog.find(findQuery)
@@ -465,10 +481,30 @@ server.post("/search-blogs", (req, res) => {
     });
 });
 
-server.post("/search-blogs-count", (req, res) => {
-  let { tag } = req.body;
-  let findQuery = { tags: tag, draft: false };
+server.post("/search-users", (req, res) => {
+  let { query } = req.body;
 
+  User.find({ "personal_info.username": new RegExp(query, "i") })
+    .limit(50)
+    .select(
+      "personal_info.fullname personal_info.username personal_info.profile_img -_id"
+    )
+    .then((users) => {
+      return res.status(200).json({ users });
+    })
+    .catch((err) => {
+      return res.status(500).json({ error: err.message });
+    });
+});
+
+server.post("/search-blogs-count", (req, res) => {
+  let { tag, query } = req.body;
+  let findQuery;
+  if (tag) {
+    findQuery = { tags: tag, draft: false };
+  } else if (query) {
+    findQuery = { draft: false, title: new RegExp(query, "i") };
+  }
   Blog.countDocuments(findQuery)
     .then((count) => {
       return res.status(200).json({ totalDocs: count });
