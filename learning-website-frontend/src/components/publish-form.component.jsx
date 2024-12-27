@@ -6,11 +6,13 @@ import Tag from "./tags.component";
 import axios from "axios";
 import { UserContext } from "../App";
 import { useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 const PublishForm = () => {
   let navigate = useNavigate();
   let characterLimit = 200;
   let tagLimit = 10;
+  let{blog_id}= useParams();
   let {
     userAuth: { access_token },
   } = useContext(UserContext);
@@ -87,7 +89,7 @@ const PublishForm = () => {
       draft: false,
     };
     axios
-      .post(import.meta.env.VITE_SERVER_DOMAIN + "/create-blog", blogObj, {
+      .post(import.meta.env.VITE_SERVER_DOMAIN + "/create-blog", {...blogObj,id:blog_id}, {
         headers: {
           Authorization: `Bearer ${access_token}`,
         },
