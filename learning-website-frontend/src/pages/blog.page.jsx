@@ -8,6 +8,7 @@ import Loader from "../components/loader.component";
 import BlogInteraction from "../components/blog-interaction.component";
 import BlogPostCard from "../components/blog-post.component";
 import BlogContent from "../components/blog-content.component";
+import CommentsContainer from "../components/comments.component";
 
 
 export const blogStructure = {
@@ -28,6 +29,8 @@ const BlogPage = () => {
   const [loading, setLoading] = useState(true);
   const [similarBlogs, setSimilarBlogs] = useState(null);
   const [islikedByUser, setLikedByUser] = useState(false);
+  const[commentsWrapper,setCommentsWrapper]=useState(false);
+  const[totalParentCommentsLoaded,setTotalParentCommentsLoaded]=useState(0);
 
   let {
     title,
@@ -65,20 +68,24 @@ const BlogPage = () => {
   };
 
   useEffect(() => {
-    resetState();
+    resetStates();
     fetchBlog();
   }, [blog_id]);
-  const resetState = () => {
+  const resetStates = () => {
     setBlog(blogStructure);
     setLoading(true);
     setSimilarBlogs(null);
+    setLikedByUser(false);
+    setCommentsWrapper(false);
+    setTotalParentCommentsLoaded(0);
   }
   return (
     <AnimationWrapper>
       {loading ? 
         <Loader />
        : 
-       <BlogContext.Provider value={{blog,setBlog,islikedByUser,setLikedByUser}}>
+       <BlogContext.Provider value={{blog,setBlog,islikedByUser,setLikedByUser,commentsWrapper,setCommentsWrapper,totalParentCommentsLoaded,setTotalParentCommentsLoaded}}>
+         <CommentsContainer/>
          <div className="max-w-[900px] center py-10 max-lg:px-[5vw]">
           <img src={banner} className="aspect-video" />
           <div className="mt-12">
