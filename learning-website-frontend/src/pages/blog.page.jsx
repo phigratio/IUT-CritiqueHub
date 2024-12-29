@@ -8,7 +8,7 @@ import Loader from "../components/loader.component";
 import BlogInteraction from "../components/blog-interaction.component";
 import BlogPostCard from "../components/blog-post.component";
 import BlogContent from "../components/blog-content.component";
-import CommentsContainer from "../components/comments.component";
+import CommentsContainer, { fetchComments } from "../components/comments.component";
 
 
 export const blogStructure = {
@@ -48,7 +48,10 @@ const BlogPage = () => {
         blog_id,
 
       })
-      .then(({ data: { blog } }) => {
+      .then(async({ data: { blog } }) => {
+        
+
+        blog.comments=await fetchComments({_id:blog_id,setParentCommentCountFun:setTotalParentCommentsLoaded});
         setBlog(blog);
        
 
