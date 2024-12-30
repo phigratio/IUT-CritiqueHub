@@ -37,7 +37,7 @@ const BlogPage = () => {
     content,
     banner,
     author: {
-      personal_info: { fullname, username: author_username, profile_img },
+      personal_info: { fullname, username: author_username, profile_img }
     },
     publishedAt,tags
   } = blog;
@@ -45,23 +45,23 @@ const BlogPage = () => {
   const fetchBlog = () => {
     axios
       .post(import.meta.env.VITE_SERVER_DOMAIN + "/get-blog", {
-        blog_id,
+        blog_id
 
       })
       .then(async({ data: { blog } }) => {
         
 
-        blog.comments=await fetchComments({_id:blog_id,setParentCommentCountFun:setTotalParentCommentsLoaded});
+        blog.comments=await fetchComments({blog_id: blog._id,setParentCommentCountFun:setTotalParentCommentsLoaded});
         setBlog(blog);
        
 
         axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/search-blogs", {tag:tags[0],limit:6,eliminate_blog:blog_id})
         .then(({data})=>{
-          console.log(tags)
+
           setSimilarBlogs(data.blogs);
           
         })
-        setBlog(blog);
+        
         setLoading(false);
       })
       .catch((err) => {

@@ -24,27 +24,28 @@ const BlogEditor = () => {
   } = useContext(UserContext);
  
   let {
-    blog,
-    blog: { title, banner, content, tags, des },
+    blog = {},
+    blog: { title = "", banner = "", content = "", tags = [], des = "" } = {},
     setBlog,
     textEditor,
     setTextEditor,
     editorState,
     setEditorState,
   } = useContext(EditorContext);
-
+  
   useEffect(() => {
-    if (!textEditor.isReady) {
+    if (!textEditor?.isReady) {
       setTextEditor(
         new EditorJs({
           holder: "textEditor",
-          data: Array.isArray(content)?content[0]:content,
+          data: Array.isArray(content) ? content[0] : content,
           tools: tools,
           placeholder: "Let's Write an Awesome Review",
         })
       );
     }
-  }, []);
+  }, [textEditor, content, setTextEditor]);
+  
   const handlePublishEvent = () => {
     if (!banner.length) {
       return toast.error("Upload a blog banner to publish it");
