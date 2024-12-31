@@ -20,7 +20,7 @@ export const fetchComments=async({skip=0,blog_id,setParentCommentCountFun,commen
       res={results:data};
     }
     else{
-      res={result:[...comment_array,...data]};
+      res={results:[...comment_array,...data]};
     }
   })
 
