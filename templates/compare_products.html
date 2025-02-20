@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Product Price Comparison</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+      }
+      table {
+        width: 100%;
+        margin-top: 20px;
+        border-collapse: collapse;
+      }
+      table,
+      th,
+      td {
+        border: 1px solid #ddd;
+      }
+      th,
+      td {
+        padding: 12px;
+        text-align: center;
+      }
+      th {
+        background-color: #f4f4f4;
+      }
+      .search-bar {
+        margin-bottom: 20px;
+      }
+      .search-bar input {
+        padding: 10px;
+        width: 300px;
+      }
+      .search-bar button {
+        padding: 10px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        cursor: pointer;
+      }
+      .search-bar button:hover {
+        background-color: #0056b3;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Product Price Comparison</h1>
+
+    <div class="search-bar">
+      <input type="text" id="search-query" placeholder="Enter product name" />
+      <button onclick="searchProduct()">Search</button>
+    </div>
+
+    <table id="comparison-table">
+      <thead>
+        <tr>
+          <th>Product Name</th>
+          <th>Apple Gadgets BD Price</th>
+          <th>Sumash Tech Price</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Product data will be dynamically inserted here -->
+      </tbody>
+    </table>
+
+    <script>
+      function searchProduct() {
+        const query = document.getElementById("search-query").value.trim();
+        if (!query) {
+          alert("Please enter a product name.");
+          return;
+        }
+
+        fetch(`/compare?product=${encodeURIComponent(query)}`)
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+          })
+          .then((data) => {
+            console.log("API Response:", data);
+
+            const tableBody = document
+              .getElementById("comparison-table")
+              .getElementsByTagName("tbody")[0];
+            tableBody.innerHTML = "";
+
+            if (data.length > 0) {
+              data.forEach((product) => {
+                const row = tableBody.insertRow();
+                row.insertCell(0).innerText = product.name;
+                row.insertCell(1).innerText =
+                  product.apple_gadgets_bd_price || "N/A";
+                row.insertCell(2).innerText =
+                  product.sumash_tech_price || "N/A";
+              });
+            } else {
+              const row = tableBody.insertRow();
+              row.insertCell(0).innerText = "No products found";
+              row.insertCell(1).innerText = "";
+              row.insertCell(2).innerText = "";
+            }
+          })
+          .catch((error) => {
+            console.error("Fetch error:", error);
+            alert("Error fetching product data. Check console for details.");
+          });
+      }
+    </script>
+  </body>
+</html>
