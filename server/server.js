@@ -7,7 +7,7 @@ import jwt from "jsonwebtoken";
 import cors from "cors";
 import admin from "firebase-admin";
 import  Comment  from "./Schema/Comment.js";
-import serviceAccountKey from "./react-js-reviewer-app-firebase-adminsdk-5cort-da9c5350a7.json" assert { type: "json" };
+import serviceAccountKey from "./react-js-reviewer-app-firebase-adminsdk-5cort-da9c5350a7.json" with { type: "json" };
 import { getAuth } from "firebase-admin/auth";
 import { initializeApp } from "firebase/app";
 import {
@@ -27,7 +27,7 @@ import { populate } from "dotenv";
 
 const server = express();
 
-let PORT = 3000;
+let PORT = 8081;
 
 const firebaseApp = initializeApp(firebaseConfig);
 
