@@ -11,36 +11,41 @@ import { EditorContext } from "../pages/editor.pages";
 import EditorJs from "@editorjs/editorjs";
 import { tools } from "./tools.component";
 import { UserContext } from "../App";
+import { useParams } from "react-router-dom";
 
 const BlogEditor = () => {
   let navigate = useNavigate();
+  let{blog_id}= useParams();
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState(null);
+  
   let {
     userAuth: { access_token },
   } = useContext(UserContext);
-  const [uploading, setUploading] = useState(false);
-  const [error, setError] = useState(null);
+ 
   let {
-    blog,
-    blog: { title, banner, content, tags, des },
+    blog = {},
+    blog: { title = "", banner = "", content = "", tags = [], des = "" } = {},
     setBlog,
     textEditor,
     setTextEditor,
     editorState,
     setEditorState,
   } = useContext(EditorContext);
-
+  
   useEffect(() => {
-    if (!textEditor.isReady) {
+    if (!textEditor?.isReady) {
       setTextEditor(
         new EditorJs({
           holder: "textEditor",
-          data: content,
+          data: Array.isArray(content) ? content[0] : content,
           tools: tools,
           placeholder: "Let's Write an Awesome Review",
         })
       );
     }
-  }, []);
+  }, [textEditor, content, setTextEditor]);
+  
   const handlePublishEvent = () => {
     if (!banner.length) {
       return toast.error("Upload a blog banner to publish it");
@@ -132,7 +137,7 @@ const BlogEditor = () => {
           draft: true,
         };
         axios
-          .post(import.meta.env.VITE_SERVER_DOMAIN + "/create-blog", blogObj, {
+          .post(import.meta.env.VITE_SERVER_DOMAIN + "/create-blog", {...blogObj,id:blog_id}, {
             headers: {
               Authorization: `Bearer ${access_token}`,
             },
